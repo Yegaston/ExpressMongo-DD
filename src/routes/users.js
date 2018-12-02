@@ -5,7 +5,15 @@ router.get('/users/signin', (req, res, next) => {
 });
 
 router.get('/users/signup', (req, res, next) => {
-    res.send('Formulario de registro');
+    res.render('users/signup');
 });
+
+router.post('/users/signup', (req, res, next) => {
+    const {name, email, password, confirmPassword } = req.body;
+    if(password != confirm_password){
+        
+    }
+    res.send("xd");
+})
 
 module.exports = router;
