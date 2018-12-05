@@ -1,5 +1,7 @@
 const router = require('express').Router();
 
+const User = require('../models/User')
+
 router.get('/users/signin', (req, res, next) => {
     res.send('Ingresando a la app');
 });
@@ -8,12 +10,35 @@ router.get('/users/signup', (req, res, next) => {
     res.render('users/signup');
 });
 
-router.post('/users/signup', (req, res, next) => {
+router.post('/users/signup', async (req, res, next) => {
     const {name, email, password, confirmPassword } = req.body;
-    if(password != confirm_password){
-        
+    console.log(req.body);
+    const errors = [];
+    if(name.length <= 0){
+        errors.push({text: 'Insert your name'});
     }
-    res.send("xd");
+
+    if(password != confirmPassword){
+        errors.push({text: 'password doesnt match'});
+    }
+    if(password.length < 4){
+        errors.push({text: 'Password need 4 characters o more.'});
+    }
+    if(errors.length > 0){
+        res.render('users/signup', {errors, name, email, password, confirmPassword});
+    } else {
+        const emailUser = await User.findOne({email:email});
+        if(emailUser){
+            req.flash('error_msg', "Email is already taken");
+            res.redirect('/users/signup');
+        } else {
+            const newUser = new User({name, email, password});
+            newUser.password = await newUser.encryptPassword(password);
+            await newUser.save();
+            req.flash('success_msg', 'you are registered');
+            res.redirect('/users/signup');
+        }
+    }
 })
 
 module.exports = router;
