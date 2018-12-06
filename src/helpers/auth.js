@@ -1,7 +1,7 @@
 
 const helpers = {};
 
-
+// Middleware to protect routes
 
 helpers.isAuthenticated = (req, res, next) => {
     if(req.isAuthenticated()){

@@ -19,6 +19,7 @@ router.post('/users/signup', async (req, res, next) => {
     const {name, email, password, confirmPassword } = req.body;
     console.log(req.body);
     const errors = [];
+    // Form validations
     if(name.length <= 0){
         errors.push({text: 'Insert your name'});
     }
@@ -37,6 +38,7 @@ router.post('/users/signup', async (req, res, next) => {
             req.flash('error_msg', "Email is already taken");
             res.redirect('/users/signup');
         } else {
+            // Save user
             const newUser = new User({name, email, password});
             newUser.password = await newUser.encryptPassword(password);
             await newUser.save();
@@ -45,14 +47,14 @@ router.post('/users/signup', async (req, res, next) => {
         }
     }
 })
-
+// Login with passport
 router.post('/users/login', passport.authenticate('local', {
     successRedirect: '/notes',
     failureRedirect: '/users/login',
     failureFlash: true
   }));
   
-
+// Log out with passport
 router.get('/users/logout', (req, res, next) => {
     req.logout();
     res.redirect('/');
